@@ -3,6 +3,7 @@ module github.com/addreas/template-secrets
 go 1.15
 
 require (
+	cuelang.org/go v0.2.2
 	github.com/go-logr/logr v0.3.0
 	github.com/onsi/ginkgo v1.14.1
 	github.com/onsi/gomega v1.10.2

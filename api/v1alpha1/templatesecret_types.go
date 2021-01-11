@@ -28,9 +28,9 @@ import (
 type TemplateSecretSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
-
-	Template     TemplateSource `json:"template"`
-	Replacements []ReplacementSpec
+	SecretName   string            `json:"secretName"`
+	Template     TemplateSource    `json:"template"`
+	Replacements []ReplacementSpec `json:"replacements"`
 }
 
 // TemplateSource defines a template from something else
@@ -48,8 +48,14 @@ type TemplateSource struct {
 
 // ReplacementSpec defines a match string and corresponding replacement to make in the template
 type ReplacementSpec struct {
-	Match       string            `json:"match"`
+	Match       MatchSpec         `json:"match"`
 	Replacement ReplacementSource `json:"replacement"`
+}
+
+// MatchSpec contains information about a string match
+type MatchSpec struct {
+	// +optional
+	Exact string `json:"exact"`
 }
 
 // ReplacementSource points to a value to use as a replacement in a ReplacementSpec
