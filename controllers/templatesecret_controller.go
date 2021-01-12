@@ -47,7 +47,7 @@ func (r *TemplateSecretReconciler) Scheme() *runtime.Scheme {
 //+kubebuilder:rbac:groups=addem.se,resources=templatesecrets,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=addem.se,resources=templatesecrets/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=addem.se,resources=templatesecrets/finalizers,verbs=update
-//+kubebuilder:rbac:groups=,resources=secret,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups="",resources=secrets,verbs=get;list;watch;create;update;patch;delete
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
