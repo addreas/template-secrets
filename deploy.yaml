@@ -27,10 +27,14 @@ spec:
         description: TemplateSecret is the Schema for the templatesecrets API
         properties:
           apiVersion:
-            description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
             type: string
           kind:
-            description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
             type: string
           metadata:
             type: object
@@ -39,7 +43,8 @@ spec:
             properties:
               replacements:
                 items:
-                  description: ReplacementSpec defines a match string and corresponding replacement to make in the template
+                  description: ReplacementSpec defines a match string and corresponding
+                    replacement to make in the template
                   properties:
                     match:
                       description: MatchSpec contains information about a string match
@@ -48,7 +53,8 @@ spec:
                           type: string
                       type: object
                     replacement:
-                      description: ReplacementSource points to a value to use as a replacement in a ReplacementSpec
+                      description: ReplacementSource points to a value to use as a
+                        replacement in a ReplacementSpec
                       properties:
                         configMapKeyRef:
                           description: Selects a key of a ConfigMap.
@@ -57,10 +63,12 @@ spec:
                               description: The key to select.
                               type: string
                             name:
-                              description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?'
+                              description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                TODO: Add other useful fields. apiVersion, kind, uid?'
                               type: string
                             optional:
-                              description: Specify whether the ConfigMap or its key must be defined
+                              description: Specify whether the ConfigMap or its key
+                                must be defined
                               type: boolean
                           required:
                           - key
@@ -69,13 +77,16 @@ spec:
                           description: Selects a key of a secret in the pod's namespace
                           properties:
                             key:
-                              description: The key of the secret to select from.  Must be a valid secret key.
+                              description: The key of the secret to select from.  Must
+                                be a valid secret key.
                               type: string
                             name:
-                              description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?'
+                              description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                TODO: Add other useful fields. apiVersion, kind, uid?'
                               type: string
                             optional:
-                              description: Specify whether the Secret or its key must be defined
+                              description: Specify whether the Secret or its key must
+                                be defined
                               type: boolean
                           required:
                           - key
@@ -87,7 +98,8 @@ spec:
                   type: object
                 type: array
               secretName:
-                description: 'INSERT ADDITIONAL SPEC FIELDS - desired state of cluster Important: Run "make" to regenerate code after modifying this file'
+                description: 'INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
+                  Important: Run "make" to regenerate code after modifying this file'
                 type: string
               template:
                 description: TemplateSource defines a template from something else
@@ -96,7 +108,15 @@ spec:
                     description: Use a configmap as a source for the tamplate
                     properties:
                       items:
-                        description: If unspecified, each key-value pair in the Data field of the referenced ConfigMap will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the ConfigMap, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.
+                        description: If unspecified, each key-value pair in the Data
+                          field of the referenced ConfigMap will be projected into
+                          the volume as a file whose name is the key and content is
+                          the value. If specified, the listed keys will be projected
+                          into the specified paths, and unlisted keys will not be
+                          present. If a key is specified which is not present in the
+                          ConfigMap, the volume setup will error unless it is marked
+                          optional. Paths must be relative and may not contain the
+                          '..' path or start with '..'.
                         items:
                           description: Maps a string key to a path within a volume.
                           properties:
@@ -104,11 +124,22 @@ spec:
                               description: The key to project.
                               type: string
                             mode:
-                              description: 'Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.'
+                              description: 'Optional: mode bits used to set permissions
+                                on this file. Must be an octal value between 0000
+                                and 0777 or a decimal value between 0 and 511. YAML
+                                accepts both octal and decimal values, JSON requires
+                                decimal values for mode bits. If not specified, the
+                                volume defaultMode will be used. This might be in
+                                conflict with other options that affect the file mode,
+                                like fsGroup, and the result can be other mode bits
+                                set.'
                               format: int32
                               type: integer
                             path:
-                              description: The relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.
+                              description: The relative path of the file to map the
+                                key to. May not be an absolute path. May not contain
+                                the path element '..'. May not start with the string
+                                '..'.
                               type: string
                           required:
                           - key
@@ -116,10 +147,12 @@ spec:
                           type: object
                         type: array
                       name:
-                        description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?'
+                        description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                          TODO: Add other useful fields. apiVersion, kind, uid?'
                         type: string
                       optional:
-                        description: Specify whether the ConfigMap or its keys must be defined
+                        description: Specify whether the ConfigMap or its keys must
+                          be defined
                         type: boolean
                     type: object
                   inline:
@@ -131,7 +164,15 @@ spec:
                     description: Use a secret as a source for the template
                     properties:
                       items:
-                        description: If unspecified, each key-value pair in the Data field of the referenced Secret will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the Secret, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.
+                        description: If unspecified, each key-value pair in the Data
+                          field of the referenced Secret will be projected into the
+                          volume as a file whose name is the key and content is the
+                          value. If specified, the listed keys will be projected into
+                          the specified paths, and unlisted keys will not be present.
+                          If a key is specified which is not present in the Secret,
+                          the volume setup will error unless it is marked optional.
+                          Paths must be relative and may not contain the '..' path
+                          or start with '..'.
                         items:
                           description: Maps a string key to a path within a volume.
                           properties:
@@ -139,11 +180,22 @@ spec:
                               description: The key to project.
                               type: string
                             mode:
-                              description: 'Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.'
+                              description: 'Optional: mode bits used to set permissions
+                                on this file. Must be an octal value between 0000
+                                and 0777 or a decimal value between 0 and 511. YAML
+                                accepts both octal and decimal values, JSON requires
+                                decimal values for mode bits. If not specified, the
+                                volume defaultMode will be used. This might be in
+                                conflict with other options that affect the file mode,
+                                like fsGroup, and the result can be other mode bits
+                                set.'
                               format: int32
                               type: integer
                             path:
-                              description: The relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.
+                              description: The relative path of the file to map the
+                                key to. May not be an absolute path. May not contain
+                                the path element '..'. May not start with the string
+                                '..'.
                               type: string
                           required:
                           - key
@@ -151,10 +203,12 @@ spec:
                           type: object
                         type: array
                       name:
-                        description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?'
+                        description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                          TODO: Add other useful fields. apiVersion, kind, uid?'
                         type: string
                       optional:
-                        description: Specify whether the Secret or its key must be defined
+                        description: Specify whether the Secret or its key must be
+                          defined
                         type: boolean
                     type: object
                 type: object
@@ -212,6 +266,20 @@ metadata:
   creationTimestamp: null
   name: template-secrets-manager-role
 rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
 - apiGroups:
   - ""
   resources:

@@ -79,9 +79,10 @@ func main() {
 	}
 
 	if err = (&controllers.TemplateSecretReconciler{
-		Client:      mgr.GetClient(),
-		Log:         ctrl.Log.WithName("controllers").WithName("TemplateSecret"),
-		SchemeField: mgr.GetScheme(),
+		Client:        mgr.GetClient(),
+		EventRecorder: mgr.GetEventRecorderFor("template-secrets-controller"),
+		Log:           ctrl.Log.WithName("controllers").WithName("TemplateSecret"),
+		SchemeField:   mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "TemplateSecret")
 		os.Exit(1)

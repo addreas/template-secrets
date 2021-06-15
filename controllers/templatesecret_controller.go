@@ -20,11 +20,13 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/go-logr/logr"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
@@ -35,8 +37,9 @@ import (
 // TemplateSecretReconciler reconciles a TemplateSecret object
 type TemplateSecretReconciler struct {
 	client.Client
-	Log         logr.Logger
-	SchemeField *runtime.Scheme
+	Log           logr.Logger
+	SchemeField   *runtime.Scheme
+	EventRecorder record.EventRecorder
 }
 
 // Scheme has to be a method for controllerutil to be happy about it
@@ -49,6 +52,7 @@ func (r *TemplateSecretReconciler) Scheme() *runtime.Scheme {
 //+kubebuilder:rbac:groups=addem.se,resources=templatesecrets/finalizers,verbs=update
 //+kubebuilder:rbac:groups="",resources=secrets,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups="",resources=configmaps,verbs=get;list;watch
+//+kubebuilder:rbac:groups="",resources=events,verbs=create
 
 func (r *TemplateSecretReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	log := r.Log.WithValues("templatesecret", req.NamespacedName)
@@ -68,24 +72,31 @@ func (r *TemplateSecretReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 	secret.Namespace = tSecret.Namespace
 
 	if err := controllerutil.SetControllerReference(&tSecret, &secret, r.Scheme()); err != nil {
-		return ctrl.Result{}, err
+		return ctrl.Result{RequeueAfter: time.Hour}, err
 	}
 
 	template, err := getTemplate(ctx, r, tSecret)
 	if err != nil {
-		return ctrl.Result{}, err
+		return ctrl.Result{RequeueAfter: time.Hour}, err
 	}
 
 	replacements, err := getReplacements(ctx, r, tSecret)
 	if err != nil {
-		return ctrl.Result{}, err
+		return ctrl.Result{RequeueAfter: time.Hour}, err
 	}
 
-	controllerutil.CreateOrUpdate(ctx, r, &secret, func() error {
+	res, err := controllerutil.CreateOrUpdate(ctx, r, &secret, func() error {
 		return modifySecret(&secret, template, replacements)
 	})
+	if err != nil {
+		r.EventRecorder.Event(&tSecret, "Error", "ModifySecretFailed", "failed to create or update.")
 
-	return ctrl.Result{}, nil
+		return ctrl.Result{RequeueAfter: time.Hour}, err
+	}
+
+	r.EventRecorder.Event(&tSecret, "Normal", "ModifiedSecret", fmt.Sprintf("successfully %s secret %s/%s", res, tSecret.Namespace, tSecret.Spec.SecretName))
+
+	return ctrl.Result{RequeueAfter: time.Hour}, err
 }
 
 func modifySecret(secret *corev1.Secret, template map[string]string, replacements []Replacement) error {
@@ -141,7 +152,7 @@ func getReplacement(ctx context.Context, r *TemplateSecretReconciler, tSecret ap
 
 		res, found := secret.Data[source.SecretKeyRef.Key]
 		if !found {
-			return "", fmt.Errorf("Missing key %s in secret %s", source.SecretKeyRef.Key, source.SecretKeyRef.Name)
+			return "", fmt.Errorf("missing key %s in secret %s", source.SecretKeyRef.Key, source.SecretKeyRef.Name)
 		}
 
 		return string(res), nil
@@ -160,12 +171,12 @@ func getReplacement(ctx context.Context, r *TemplateSecretReconciler, tSecret ap
 
 		res, err := configMap.Data[source.ConfigMapKeyRef.Key]
 		if err {
-			return "", fmt.Errorf("Missing key %s in ConfigMap %s", source.ConfigMapKeyRef.Key, source.ConfigMapKeyRef.Name)
+			return "", fmt.Errorf("missing key %s in ConfigMap %s", source.ConfigMapKeyRef.Key, source.ConfigMapKeyRef.Name)
 		}
 
 		return res, nil
 	default:
-		return "", fmt.Errorf("Invalid replacement config")
+		return "", fmt.Errorf("invalid replacement config")
 	}
 }
 
@@ -208,5 +219,6 @@ func (r *TemplateSecretReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&api.TemplateSecret{}).
 		Owns(&corev1.Secret{}).
+		Owns(&corev1.ConfigMap{}).
 		Complete(r)
 }
